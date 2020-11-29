@@ -1,0 +1,28 @@
+http:
+  port: "8084"
+  
+mytrains-process:
+  host: "localhost"
+  port: "8083"
+  basepath: "mytrains/prc/api/v1"
+  protocol: "HTTP"
+  responseTimeout: "10000"
+  
+notification:
+  host: "localhost"
+  port: "8084"
+  basepath: "/api"
+  protocol: "HTTP"
+  responseTimeout: "10000"
+  
+json:
+  logger:
+    application:
+      name: ${project.artifactId}
+      version: ${project.version}
+    disabledFields: ""
+
+mule:
+  env: ""
+      
+  

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:notification-process-api="http://www.mulesoft.org/schema/mule/notification-process-api"
+	xmlns:my-trains-process-api="http://www.mulesoft.org/schema/mule/my-trains-process-api"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/my-trains-process-api http://www.mulesoft.org/schema/mule/my-trains-process-api/current/mule-my-trains-process-api.xsd http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/notification-process-api http://www.mulesoft.org/schema/mule/notification-process-api/current/mule-notification-process-api.xsd">
+	<http:listener-config name="mytravelExperienceApiHttpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="myTravelExperienceApiConfig" api="resource::cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd:mytravel-experience-api:1.0.5:raml:zip:mytravel-experience-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+	<json-logger:config name="jsonLoggerConfig"
+		doc:name="JSON Logger Config"
+		doc:id="5f4c48a3-1247-4e90-bb91-7ec12290bcf2"
+		environment="${mule.env}"
+		disabledFields="${json.logger.disabledFields}" />
+	<my-trains-process-api:config name="myTrainsProcessApiConfig" doc:name="MyTrains Process API Config" doc:id="ec0423a4-66f3-4ff7-aa5d-d27be83c9073" property_host="${mytrains-process.host}" property_port="${mytrains-process.port}" property_protocol="${mytrains-process.protocol}" property_basePath="${mytrains-process.basepath}" property_responseTimeout="${mytrains-process.responseTimeout}" />
+	<configuration-properties doc:name="Configuration properties" doc:id="ec7a7569-fe83-4cc4-b511-72cade0e7d4d" file="configs\mytravel.experience.api.${env}.yaml" />
+	<global-property doc:name="Global Property" doc:id="a1c6f48c-145b-458e-900e-b13862ec0a24" name="env" value="dev" />
+	<notification-process-api:config name="notificationProcessAPIConfig" doc:name="Notification Process API Config" doc:id="3a888bca-46c2-4188-b981-dc4c1a00af9c" property_host="${notification.host}" property_port="${notification.port}" property_protocol="${notification.protocol}" property_basePath="${notification.basepath}" property_responseTimeout="${notification.responseTimeout}" />
+    	
+
+</mule>

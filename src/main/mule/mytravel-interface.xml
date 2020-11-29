@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <flow name="mytravel-experience-api-main">
+        <http:listener config-ref="mytravelExperienceApiHttpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="myTravelExperienceApiConfig" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="mytravel-experience-api-console">
+        <http:listener config-ref="mytravelExperienceApiHttpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="myTravelExperienceApiConfig" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="delete:\myTravel\user\(userID)\subscriptions\(subscriptionID):myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="userID">attributes.uriParams.'userID'</ee:set-variable>
+                <ee:set-variable variableName="subscriptionID">attributes.uriParams.'subscriptionID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Successfully deleted subscription."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\attractionspots:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  restaurant: [
+    {
+      "type": "Restaurant",
+      name: "Pizza Express Pizzeria",
+      address: "Pizza Express Pizzeria, Strand, Westminster WC2R 0RG, United Kingdom",
+      postcode: "WC2R 0RG",
+      distance: "30m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Tandoor Chop House",
+      address: "Tandoor Chop House, 8 Adelaide Street, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "68m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Tortilla",
+      address: "Tortilla, 460 Strand, Westminster WC2R 0RG, United Kingdom",
+      postcode: "WC2R 0RG",
+      distance: "70m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "The Strand dining rooms",
+      address: "The Strand dining rooms, 1 Strand, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "100m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Terroirs",
+      address: "Terroirs, 5 William IV Street, Westminster WC2N 4DW, United Kingdom",
+      postcode: "WC2N 4DW",
+      distance: "102m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Lupita",
+      address: "Lupita, 13-15 Villiers Street, Westminster WC2N 6ND, United Kingdom",
+      postcode: "WC2N 6ND",
+      distance: "105m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Hazuki",
+      address: "Hazuki, 43 Chandos Place, Westminster WC2N 4HS, United Kingdom",
+      postcode: "WC2N 4HS",
+      distance: "120m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "Rosetta",
+      address: "Rosetta, William IV Street, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "122m"
+    }, 
+    {
+      "type": "Restaurant",
+      name: "L'Ulivo",
+      address: "L'Ulivo, 21-23 Villiers Street, Westminster WC2N 6ND, United Kingdom",
+      postcode: "WC2N 6ND",
+      distance: "124m"
+    }
+  ],
+  tourism: [
+    {
+      "type": "Tourism",
+      name: "St Martin-in-the-Fields",
+      address: "St Martin-in-the-Fields, Trafalgar Square, Westminster WC2N 4JH, United Kingdom",
+      postcode: "WC2N 4JH",
+      distance: "46m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "Benjamin Franklin",
+      address: "Benjamin Franklin, 36 Craven Street, Westminster WC2N 5NS, United Kingdom",
+      postcode: "WC2N 5NS",
+      distance: "115m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "Trafalgar Square",
+      address: "Trafalgar Square, Trafalgar Square, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "117m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "Strand Gallery",
+      address: "Strand Gallery, John Adam Street, Westminster WC2N 6HU, United Kingdom",
+      postcode: "WC2N 6HU",
+      distance: "117m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "National Gallery",
+      address: "National Gallery, Trafalgar Square, Westminster WC2N 5DN, United Kingdom",
+      postcode: "WC2N 5DN",
+      distance: "118m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "Police box",
+      address: "St. James's, Westminster, United Kingdom",
+      postcode: null,
+      distance: "124m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "George IV",
+      address: "George IV, Trafalgar Square, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "127m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "George Washington",
+      address: "George Washington, Trafalgar Square, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "130m"
+    }, 
+    {
+      "type": "Tourism",
+      name: "Henry Havelock",
+      address: "Henry Havelock, Trafalgar Square, Westminster WC2, United Kingdom",
+      postcode: "WC2",
+      distance: "132m"
+    }, 
+    {
+      "type": "Tourism",
+      name: null,
+      address: "St. James's, Westminster, United Kingdom",
+      postcode: null,
+      distance: "132m"
+    }
+  ],
+  supermarket: [
+    {
+      "type": "Supermarket",
+      name: "Jumbo",
+      address: "Jumbo, The Arches, Westminster WC2N 6NG, United Kingdom",
+      postcode: "WC2N 6NG",
+      distance: "125m"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\covid:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "output": {
+    value: [
+      {
+        date: "2020-11-21",
+        areaName: "England",
+        areaCode: "E92000001",
+        newCasesByPublishDate: 17615,
+        cumCasesByPublishDate: 1284891,
+        newDeathsByDeathDate: 132,
+        cumDeathsByDeathDate: 58362
+      }, 
+      {
+        date: "2020-11-06",
+        areaName: "England",
+        areaCode: "E92000001",
+        newCasesByPublishDate: 20268,
+        cumCasesByPublishDate: 975504,
+        newDeathsByDeathDate: 367,
+        cumDeathsByDeathDate: 52986
+      }
+    ]
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\covid\areaname:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "date": "2020-11-23",
+    "areaName": "East Midlands",
+    "areaCode": "E12000004",
+    "daily": 54,
+    "cumulative": 129040
+  },
+  {
+    "date": "2020-11-23",
+    "areaName": "East Midlands",
+    "areaCode": "E12000004",
+    "daily": 879,
+    "cumulative": 128986
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\forecast:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  cityName: "New York",
+  countryName: "US",
+  latitude: "40.7143",
+  longitude: "-74.006",
+  date: "2020-11-27 15:00:00",
+  temperature: "284.58125",
+  temp_min: "285.47",
+  temp_max: "285.47",
+  feelsLike: "282.98",
+  humidity: "68",
+  weather: "Clear",
+  clouds: "0",
+  windSpeed: "2.42",
+  visibility: "10000"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\forgotPassword:application\json:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Password reset link sent to email."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\stations\nearby:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    stationCode: "HLR",
+    stationName: "Hall Road",
+    postCode: "L23 8TU"
+  }, 
+  {
+    stationCode: "UNV",
+    stationName: "University (T & W Metro)",
+    postCode: "NE1 7RU"
+  }, 
+  {
+    stationCode: "LCN",
+    stationName: "Lincoln Central",
+    postCode: "LN5 7EQ"
+  }, 
+  {
+    stationCode: "XSN",
+    stationName: "Southampton Eastern Docks",
+    postCode: "SO14 3QN"
+  }, 
+  {
+    stationCode: "GGV",
+    stationName: "Gargrave",
+    postCode: "BD23 3PD"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\stations:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    stationCode: "HLR",
+    stationName: "Hall Road",
+    postCodes: [
+      "L23 8TU", 
+      "L23 8TT", 
+      "L23 8TY", 
+      "L23 8TZ", 
+      "L23 8UX", 
+      "L23 8UA"
+    ]
+  }, 
+  {
+    stationCode: "UNV",
+    stationName: "University (T & W Metro)",
+    postCodes: [
+      "NE1 7RU", 
+      "NE1 8QB", 
+      "NE1 7RX", 
+      "NE1 7RH"
+    ]
+  }, 
+  {
+    stationCode: "LCN",
+    stationName: "Lincoln Central",
+    postCodes: [
+      "LN5 7EQ", 
+      "LN5 7HB", 
+      "LN5 7ET"
+    ]
+  }, 
+  {
+    stationCode: "XSN",
+    stationName: "Southampton Eastern Docks",
+    postCodes: [
+      "SO14 3QN", 
+      "SO14 3AE", 
+      "SO14 3FU", 
+      "SO14 3SE"
+    ]
+  }, 
+  {
+    stationCode: "GGV",
+    stationName: "Gargrave",
+    postCodes: [
+      "BD23 3PD", 
+      "BD23 3QY", 
+      "BD23 3NE"
+    ]
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\user\(userID)\subscriptions\(subscriptionID):myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="userID">attributes.uriParams.'userID'</ee:set-variable>
+                <ee:set-variable variableName="subscriptionID">attributes.uriParams.'subscriptionID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  sourceLocationCode: "BSK",
+  destinationLocationCode: "WAT",
+  fromTime: "11:51:20",
+  toTime: "11:51:27",
+  advanceNotificationMins: 30
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\user\(userID)\subscriptions:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="userID">attributes.uriParams.'userID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    sourceLocationCode: "BSK",
+    destinationLocationCode: "WAT",
+    fromTime: "11:51:20",
+    toTime: "11:51:27",
+    advanceNotificationMins: 30
+  }, 
+  {
+    sourceLocationCode: "WVH",
+    destinationLocationCode: "BHM",
+    fromTime: "10:00:20",
+    toTime: "11:00:27",
+    advanceNotificationMins: 30
+  }, 
+  {
+    sourceLocationCode: "COV",
+    destinationLocationCode: "BHM",
+    fromTime: "09:00:20",
+    toTime: "09:30:27",
+    advanceNotificationMins: 60
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\locations\stations\trains:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    trainNumber: "0845",
+    origin: "London St Pancras International",
+    destination: "Looe",
+    eta: "08:30",
+    etd: "07:30",
+    duration: "60"
+  }, 
+  {
+    trainNumber: "0846",
+    origin: "Waterloo Station",
+    destination: "Paddington",
+    eta: "08:30",
+    etd: "07:30",
+    duration: "60"
+  }, 
+  {
+    trainNumber: "0847",
+    origin: "Blackfriars Railway Station",
+    destination: "king's cross station",
+    eta: "08:30",
+    etd: "07:30",
+    duration: "60"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\myTravel\user\(userID):myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="userID">attributes.uriParams.'userID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  userId: "00unbs535Mtx3XV1c4x6",
+  firstName: "Jane",
+  lastName: "Doe",
+  email: "jane.doe@example.com",
+  phone: "0469112334"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\myTravel\login:application\json:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  tokenType: "Bearer",
+  expiresIn: 3600,
+  scope: "user",
+  accessToken: "eyJraWQiOiIzSmlEbnN4MEFPNHdnS3ZCVlRKTmlvdmdaamJ3bGZmajZESWJ4ODN6dkpNIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULlctWDVHMG9HV2NfUGVzdXQ4YnpjU1FyWnhMT09IU"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\myTravel\register:application\json:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "User registered successfully."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\myTravel\user\(userID)\subscriptions:application\json:myTravelExperienceApiConfig">
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core">
+            <ee:variables>
+                <ee:set-variable variableName="userID">attributes.uriParams.'userID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "Successfully created subscription."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>
