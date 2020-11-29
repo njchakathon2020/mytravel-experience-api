@@ -23,6 +23,41 @@ http://www.mulesoft.org/schema/mule/notification-process-api http://www.mulesoft
 	<configuration-properties doc:name="Configuration properties" doc:id="ec7a7569-fe83-4cc4-b511-72cade0e7d4d" file="configs\mytravel.experience.api.${env}.yaml" />
 	<global-property doc:name="Global Property" doc:id="a1c6f48c-145b-458e-900e-b13862ec0a24" name="env" value="dev" />
 	<notification-process-api:config name="notificationProcessAPIConfig" doc:name="Notification Process API Config" doc:id="3a888bca-46c2-4188-b981-dc4c1a00af9c" property_host="${notification.host}" property_port="${notification.port}" property_protocol="${notification.protocol}" property_basePath="${notification.basepath}" property_responseTimeout="${notification.responseTimeout}" />
+	<error-handler name="mytravel-global-error-handler" doc:id="558c7548-45a5-4642-bfe0-96410369091e" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e26f26d0-4db6-4aae-83b5-5d32f5aa0aff" type="MY-TRAINS-PROCESS-API:BAD_REQUEST, MY-TRAINS-PROCESS-API:METHOD_NOT_ALLOWED, MY-TRAINS-PROCESS-API:NOT_FOUND, MY-TRAINS-PROCESS-API:PARSING, MY-TRAINS-PROCESS-API:UNSUPPORTED_MEDIA_TYPE, NOTIFICATION-PROCESS-API:BAD_REQUEST, NOTIFICATION-PROCESS-API:METHOD_NOT_ALLOWED, NOTIFICATION-PROCESS-API:NOT_FOUND, NOTIFICATION-PROCESS-API:PARSING, NOTIFICATION-PROCESS-API:UNSUPPORTED_MEDIA_TYPE">
+				<json-logger:logger doc:name="Log Error BEFORE Transform" doc:id="db2f6515-3c14-4eb1-9687-f409fe4fbdfb" config-ref="jsonLoggerConfig" message="Error BEFORE Transform " tracePoint="BEFORE_TRANSFORM" priority="ERROR"/>
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+  statusCode: "400",
+  message: "Bad Request. Please check the request."
+ }]' doc:name="Set Payload" doc:id="e4b04620-1263-4514-a46f-fca216b07d85" />
+				<json-logger:logger doc:name="Log Error AFTER Transformation" doc:id="d6d30ee3-e7d0-4c8f-adb7-2dc7c280687a" config-ref="jsonLoggerConfig" message="Error AFTER Transformation"/>
+			</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f7ef923b-6bc0-4878-b9ff-fc69e1552c68" type="MY-TRAINS-PROCESS-API:CONNECTIVITY, MY-TRAINS-PROCESS-API:INTERNAL_SERVER_ERROR, MY-TRAINS-PROCESS-API:RETRY_EXHAUSTED, MY-TRAINS-PROCESS-API:SERVICE_UNAVAILABLE, MY-TRAINS-PROCESS-API:TIMEOUT, NOTIFICATION-PROCESS-API:CONNECTIVITY,NOTIFICATION-PROCESS-API:INTERNAL_SERVER_ERROR, NOTIFICATION-PROCESS-API:RETRY_EXHAUSTED, NOTIFICATION-PROCESS-API:SERVICE_UNAVAILABLE, NOTIFICATION-PROCESS-API:TIMEOUT">
+				<json-logger:logger doc:name="Log Error BEFORE Transformation" doc:id="e7f2ed02-0c89-4b2a-bd98-be6c7f74a6c8" config-ref="jsonLoggerConfig" message="Error at myTrains Process API" />
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+  statusCode: "500",
+  message: "Server Error."
+ }]' doc:name="Set Payload" doc:id="34fd0b5a-f087-40dc-abca-074c89945d3a" />
+				<json-logger:logger doc:name="Log Error AFTER Transformation" doc:id="93ccd5a0-36fc-49cc-b390-15d41b970b6f" config-ref="jsonLoggerConfig" message="Error" />
+			</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4d7e72d6-88d9-491d-b119-013414dda822" type="ANY">
+			<json-logger:logger doc:name="Log Error BEFORE Transform" doc:id="57846155-597b-4fff-8de8-fb781fcbbc3f" config-ref="jsonLoggerConfig" message="Error BEFORE Transform " tracePoint="BEFORE_TRANSFORM" priority="ERROR"/>
+				<set-payload value='#[%dw 2.0
+output application/json
+---
+{
+  statusCode: "500",
+  message: "Bad Request. Please check the request."
+ }]' doc:name="Set Payload" doc:id="753aa301-cc69-44d2-a402-57bf047bce3e" />
+				<json-logger:logger doc:name="Log Error AFTER Transformation" doc:id="429de3aa-9e05-413d-b8dd-506b85c77a25" config-ref="jsonLoggerConfig" message="Error AFTER Transformation"/>
+		</on-error-continue>
+	</error-handler>
     	
 
 </mule>

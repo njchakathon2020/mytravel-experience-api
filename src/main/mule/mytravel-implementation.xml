@@ -38,8 +38,8 @@ output application/json
 output application/json
 ---
 {
-  "email": payload.email,
-  "password": payload.password
+  "email": message.payload.email,
+  "password": message.payload.password
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -120,6 +120,9 @@ payload map(station, index)->{
 	<flow name="get-attraction-spots-flow" doc:id="990bbfbb-46fc-491c-9446-8878dede0538" >
 		<notification-process-api:get-attraction-spots doc:name="Get attraction spots" doc:id="69c84be9-cbff-446d-abce-4b6c73912de3" config-ref="notificationProcessAPIConfig" city="#[attributes.queryParams.city]"/>
 		<json-logger:logger doc:name="Log Attraction Spots" doc:id="dde513f3-6d84-4046-8a74-ab2b51e1912b" config-ref="jsonLoggerConfig" message="Attraction Spots based on City" tracePoint="AFTER_REQUEST"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20da506e-1454-420f-bc1d-e8e5db233f9b" type="NOTIFICATION-PROCESS-API:BAD_REQUEST, NOTIFICATION-PROCESS-API:METHOD_NOT_ALLOWED"/>
+		</error-handler>
 	</flow>
 	<flow name="create-subscription-flow" doc:id="60e6bf37-25a3-4e8b-a671-46c31f622029" >
 		<json-logger:logger doc:name="Log Subscription details" doc:id="7b773d22-b314-47ce-94a4-afda7f7d82e5" config-ref="jsonLoggerConfig" message="Subscription Details" tracePoint="BEFORE_REQUEST"/>
