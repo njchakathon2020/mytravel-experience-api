@@ -82,24 +82,23 @@
             <version>2.0.1</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-
-    	<dependency>
-            <groupId>cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd</groupId>
-            <artifactId>mule-plugin-notification-process-api</artifactId>
-            <version>1.0.2</version>
-            <classifier>mule-plugin</classifier>
-        </dependency>
     	<dependency>
             <groupId>cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd</groupId>
             <artifactId>mytravel-experience-api</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.8</version>
             <classifier>raml</classifier>
             <type>zip</type>
         </dependency>
     	<dependency>
             <groupId>cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd</groupId>
-            <artifactId>mule-plugin-mytrains-process-api</artifactId>
+            <artifactId>mule-plugin-notification-process-api</artifactId>
             <version>1.0.6</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd</groupId>
+            <artifactId>mule-plugin-mytrains-process-api</artifactId>
+            <version>1.0.7</version>
             <classifier>mule-plugin</classifier>
         </dependency>
     </dependencies>

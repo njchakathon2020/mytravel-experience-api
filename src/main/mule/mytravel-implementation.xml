@@ -17,17 +17,19 @@ http://www.mulesoft.org/schema/mule/notification-process-api http://www.mulesoft
 output application/json
 ---
 {
-	firstName: payload.firstName,
-	lastName: payload.lastName,
-	email: payload.email,
-	phone: payload.phone,
-	password: payload.password
+	firstName: message.payload.firstName,
+	lastName: message.payload.lastName,
+	email: message.payload.email,
+	phone: message.payload.phone,
+	password: message.payload.password
 }
 ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<json-logger:logger doc:name="Log User details AFTER Transform" doc:id="5a055e00-4ac6-4211-b807-2600fd029099" config-ref="jsonLoggerConfig" message="User details AFTER Transform" tracePoint="AFTER_TRANSFORM"/>
-		<my-trains-process-api:create-user doc:name="Create User" doc:id="1816239b-df5b-4f64-a9e0-d3165faa5c1d" config-ref="myTrainsProcessApiConfig"/>
+		<my-trains-process-api:create-user doc:name="Create User" doc:id="1816239b-df5b-4f64-a9e0-d3165faa5c1d" config-ref="myTrainsProcessApiConfig">
+			<my-trains-process-api:create-user-request-data ><![CDATA[#[message.payload]]]></my-trains-process-api:create-user-request-data>
+		</my-trains-process-api:create-user>
 		<json-logger:logger doc:name="Log Register User Response" doc:id="8b853437-9cff-4f7d-a4de-90fd3a48f3d4" config-ref="jsonLoggerConfig" message="Register User response" tracePoint="END"/>
 	</flow>
 	<flow name="user-login-flow" doc:id="d6d23f33-da1f-4a74-ad64-26ba6d913582" >
@@ -51,10 +53,10 @@ output application/json
 output application/json
 ---
 {
-	"tokenType": payload.tokenType,
-	"expiresIn": payload.expiresIn,
+	"tokenType": payload.token_type,
+	"expiresIn": payload.expires_in,
 	"scope": payload.scope,
-	"accessToken": payload.accessToken
+	"accessToken": payload.access_token
 } ]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
@@ -62,17 +64,21 @@ output application/json
 	</flow>
 	<flow name="forgot-password-flow" doc:id="f6cb68e1-9ff2-4a14-b073-342b0dfb3777" >
 		<json-logger:logger doc:name="Log username BEFORE Transform" doc:id="a9953bff-6790-47f6-9d35-4a060bb019dd" config-ref="jsonLoggerConfig" message="Username BEFORE Transform" tracePoint="BEFORE_TRANSFORM"/>
-		<my-trains-process-api:forgot-password doc:name="Forgot Password" doc:id="87dc222e-6160-463e-9350-8c21cc47b85f" config-ref="myTrainsProcessApiConfig"/>
+		<my-trains-process-api:forgot-password doc:name="Forgot Password" doc:id="87dc222e-6160-463e-9350-8c21cc47b85f" config-ref="myTrainsProcessApiConfig">
+			<my-trains-process-api:forgot-password-request-data ><![CDATA[#[payload as String]]]></my-trains-process-api:forgot-password-request-data>
+		</my-trains-process-api:forgot-password>
 	</flow>
 	<flow name="get-user-by-userId-flow" doc:id="4812cacf-b4a6-43dd-a30a-6df29de023ff" >
-		<my-trains-process-api:get-user doc:name="Get User" doc:id="35cd89ad-aee7-4da4-8858-fe6cd1420d6d" config-ref="myTrainsProcessApiConfig" id="#[attributes.uriParams.userId]"/>
+		<my-trains-process-api:get-user doc:name="Get User" doc:id="35cd89ad-aee7-4da4-8858-fe6cd1420d6d" config-ref="myTrainsProcessApiConfig" user-id="#[message.attributes.uriParams.userId]"/>
 		<json-logger:logger doc:name="Log User Details BEFORE Transform" doc:id="6ba4ff12-11cf-4ae7-8b65-cd4d3bc9292b" config-ref="jsonLoggerConfig" message="User Detials BEFORE Transform" tracePoint="BEFORE_TRANSFORM"/>
 		<ee:transform doc:name="Transform User Details" doc:id="ba5447dc-d793-443d-a613-e64568f82290" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
+if(payload == null)
+	"User does not exist."
+else{
   "userId" : payload.userId,
   "firstName":payload.firstName,  
   "lastName": payload.lastName, 
@@ -84,7 +90,6 @@ output application/json
 		<json-logger:logger doc:name="Log User Details AFTER Transform" doc:id="7394eef7-8c58-4e90-ba13-46cb1e6ee4e8" config-ref="jsonLoggerConfig" message="User Detials AFTER Transform" tracePoint="END"/>
 	</flow>
 	<flow name="get-all-stations-flow" doc:id="30592fbb-8dc4-46d2-9542-040a99c12495" >
-		<http:listener doc:name="Listener" doc:id="6fcfc455-af29-48fb-bcfe-0b34182101a7" config-ref="mytravelExperienceApiHttpListenerConfig" path="/dd"/>
 		<my-trains-process-api:retrieve-station-details doc:name="Retrieve Station Details" doc:id="8d546b95-ba89-4280-84ae-e813e90467ed" config-ref="myTrainsProcessApiConfig"/>
 		<json-logger:logger doc:name="Log Station Detials BEFORE Transform" doc:id="dd9bf419-8cd3-49dc-ba4a-a386c625c9ab" config-ref="jsonLoggerConfig" message="Station Details" tracePoint="BEFORE_TRANSFORM"/>
 		<ee:transform doc:name="Transform Message" doc:id="1714bdc3-228a-4310-b90e-b3ebed284df4" >
@@ -92,11 +97,12 @@ output application/json
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-payload map(station, index)->{
+message.payload map(station, index)->{
 	"stationCode" : station.stationCode,
 	"stationName" : station.stationName,
-	"postCode" : station.postCode
-}]]></ee:set-payload>
+	"postCode" : station.postalCode
+}
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<json-logger:logger doc:name="Log Station Details AFTER Transform" doc:id="7fda2d3e-07d4-4959-806c-63849b6f791d" config-ref="jsonLoggerConfig" message="Station Details" tracePoint="AFTER_TRANSFORM"/>
@@ -120,22 +126,62 @@ payload map(station, index)->{
 	<flow name="get-attraction-spots-flow" doc:id="990bbfbb-46fc-491c-9446-8878dede0538" >
 		<notification-process-api:get-attraction-spots doc:name="Get attraction spots" doc:id="69c84be9-cbff-446d-abce-4b6c73912de3" config-ref="notificationProcessAPIConfig" city="#[attributes.queryParams.city]"/>
 		<json-logger:logger doc:name="Log Attraction Spots" doc:id="dde513f3-6d84-4046-8a74-ab2b51e1912b" config-ref="jsonLoggerConfig" message="Attraction Spots based on City" tracePoint="AFTER_REQUEST"/>
-		<error-handler >
-			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20da506e-1454-420f-bc1d-e8e5db233f9b" type="NOTIFICATION-PROCESS-API:BAD_REQUEST, NOTIFICATION-PROCESS-API:METHOD_NOT_ALLOWED"/>
-		</error-handler>
 	</flow>
 	<flow name="create-subscription-flow" doc:id="60e6bf37-25a3-4e8b-a671-46c31f622029" >
 		<json-logger:logger doc:name="Log Subscription details" doc:id="7b773d22-b314-47ce-94a4-afda7f7d82e5" config-ref="jsonLoggerConfig" message="Subscription Details" tracePoint="BEFORE_REQUEST"/>
-		<my-trains-process-api:create-subscription doc:name="Create Subscription" doc:id="e05622c3-190e-4cc6-b593-3bf2044fc637" config-ref="myTrainsProcessApiConfig" id="#[attributes.uriParams.userId]"/>
+		<my-trains-process-api:create-subscription doc:name="Create Subscription" doc:id="e05622c3-190e-4cc6-b593-3bf2044fc637" config-ref="myTrainsProcessApiConfig" user-id="#[message.attributes.uriParams.userId]">
+			<my-trains-process-api:create-subscription-request-data ><![CDATA[#[message.payload]]]></my-trains-process-api:create-subscription-request-data>
+		</my-trains-process-api:create-subscription>
 		<json-logger:logger doc:name="Log Response Message" doc:id="a94c6850-7e98-43ea-9309-eafe14df613e" config-ref="jsonLoggerConfig" message="Response Message for create subscription request" tracePoint="AFTER_REQUEST"/>
 	</flow>
-	<flow name="get-subscription-by-id-low" doc:id="b9b01ff9-803d-4b8e-bc24-7e1c026ba99b" >
-		<my-trains-process-api:get-subscription doc:name="Get Subscription" doc:id="063a7cb9-7cfc-4c6d-92f5-45aa373fc449" config-ref="myTrainsProcessApiConfig" id="#[attributes.uriParams.userID]" subid="#[attributes.uriParams.subscriptionID]"/>
+	<flow name="get-subscription-by-id-flow" doc:id="b9b01ff9-803d-4b8e-bc24-7e1c026ba99b" >
+		<my-trains-process-api:get-subscription doc:name="Get Subscription" doc:id="063a7cb9-7cfc-4c6d-92f5-45aa373fc449" config-ref="myTrainsProcessApiConfig" user-id="#[message.attributes.uriParams.userId]" subscription-id="#[message.attributes.uriParams.subscriptionId]"/>
 		<json-logger:logger doc:name="Log Subscription Details" doc:id="f58fadde-6cae-437a-a1ff-bb277867b132" config-ref="jsonLoggerConfig" message="Subscription Detaisl" tracePoint="AFTER_REQUEST"/>
+		<ee:transform doc:name="Transform Message" doc:id="a96c99df-ebc4-43d1-bcf0-5b4d54340fc8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload == null)
+	"Subscription does not exist."
+else
+	payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="get-all-subscriptions-flow" doc:id="5d46c66f-05ea-4a4f-9d42-53ee1b82896a" >
-		<my-trains-process-api:get-all-susbscription doc:name="Get All Susbscription" doc:id="3da2a13b-a3cf-46ed-ad89-9e50f072ba00" config-ref="myTrainsProcessApiConfig" id="#[attributes.uriParams.userID]"/>
-		<json-logger:logger doc:name="Log All Subscriptions" doc:id="af1927a0-08e7-4bd3-810d-c04a05500576" config-ref="jsonLoggerConfig" message="Subscriptions" tracePoint="AFTER_REQUEST"/>
+		<my-trains-process-api:get-all-susbscription doc:name="Get All Susbscription" doc:id="3da2a13b-a3cf-46ed-ad89-9e50f072ba00" config-ref="myTrainsProcessApiConfig" user-id="#[message.attributes.uriParams.userId]"/>
+		<json-logger:logger doc:name="Log All Subscriptions BEFORE Transform" doc:id="af1927a0-08e7-4bd3-810d-c04a05500576" config-ref="jsonLoggerConfig" message="Subscriptions" tracePoint="AFTER_REQUEST"/>
+		<ee:transform doc:name="Transform Message" doc:id="0dd5cb76-af03-460a-9e1f-2872f794ce5f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"sourceLocationCode": message.payload.sourceLocationCode,
+    "destinationLocationCode": message.payload.destinationLocationCode,
+    "fromTime": message.payload.fromTime,
+    "toTime": message.payload.toTime,
+    "advanceNotificationMins": message.payload.advanceNotificationMins
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Log All Subscriptions AFTER Transform" doc:id="b29e9940-edca-46c6-bb42-7951a3fc7b17" config-ref="jsonLoggerConfig" message="Subscriptions" tracePoint="AFTER_REQUEST"/>
+	</flow>
+	<flow name="unsubscribe-flow" doc:id="d6cc3ce2-9186-4501-b5f2-d87ca3d975c6" >
+		<my-trains-process-api:remove-subscription doc:name="Remove Subscription" doc:id="912ba0a6-f1a9-475e-bdb1-0e866ef1cb28" config-ref="myTrainsProcessApiConfig" user-id="#[message.attributes.uriParams.userId]" subscription-id="#[message.attributes.uriParams.subscriptionId]"/>
+		<json-logger:logger doc:name="Log Response" doc:id="2f1e82a0-fc4f-42a1-bd2e-f350e46d3413" config-ref="jsonLoggerConfig" message="Response" tracePoint="AFTER_REQUEST"/>
+	</flow>
+	<flow name="get-nearby-station-flow" doc:id="111373e0-2baf-4619-8330-0ea49808a8de" >
+		<ee:transform doc:name="Transform Message" doc:id="f6cf85dd-7423-4a91-b10b-a72be5c09105" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Currently unavailable."]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="Log Response" doc:id="c9347c1b-cd4d-4c4d-a69c-c4d793a87bed" config-ref="jsonLoggerConfig" message="Nearby Station" tracePoint="AFTER_REQUEST"/>
 	</flow>	
 
 </mule>

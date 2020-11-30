@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/notification-process-api http://www.mulesoft
 	<http:listener-config name="mytravelExperienceApiHttpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="${http.port}" />
     </http:listener-config>
-    <apikit:config name="myTravelExperienceApiConfig" api="resource::cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd:mytravel-experience-api:1.0.5:raml:zip:mytravel-experience-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="myTravelExperienceApiConfig" api="resource::cd5bf5d6-a7c5-40f7-a8db-9f1046bbc2fd:mytravel-experience-api:1.0.8:raml:zip:mytravel-experience-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
 	<json-logger:config name="jsonLoggerConfig"
 		doc:name="JSON Logger Config"
 		doc:id="5f4c48a3-1247-4e90-bb91-7ec12290bcf2"
@@ -53,7 +53,7 @@ output application/json
 ---
 {
   statusCode: "500",
-  message: "Bad Request. Please check the request."
+  message: "Internal Server Error."
  }]' doc:name="Set Payload" doc:id="753aa301-cc69-44d2-a402-57bf047bce3e" />
 				<json-logger:logger doc:name="Log Error AFTER Transformation" doc:id="429de3aa-9e05-413d-b8dd-506b85c77a25" config-ref="jsonLoggerConfig" message="Error AFTER Transformation"/>
 		</on-error-continue>

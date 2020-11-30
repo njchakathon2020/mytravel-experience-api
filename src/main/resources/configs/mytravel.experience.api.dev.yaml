@@ -2,15 +2,15 @@ http:
   port: "8084"
   
 mytrains-process:
-  host: "localhost"
-  port: "8083"
-  basepath: "mytrains/prc/api/v1"
+  host: "mytrains-process-api.us-e2.cloudhub.io"
+  port: "80"
+  basepath: "/api"
   protocol: "HTTP"
   responseTimeout: "10000"
   
 notification:
-  host: "localhost"
-  port: "8084"
+  host: "notifications-process-api.us-e2.cloudhub.io"
+  port: "80"
   basepath: "/api"
   protocol: "HTTP"
   responseTimeout: "10000"
