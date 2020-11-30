@@ -2,23 +2,25 @@
 
 ## About the project
 
-mytravel-experience-api is an experience layer API which is used to provide train services infformation to the end users. 
-It uses different process APIs to create, retrive, and update data for train service operation. Besides, this api also get 
-inforamtion needed for travel such as weather information, tourist attaraction sites, resturants and supermarket location.
+mytravel-experience-api is an experience layer API which is used to provide train services information to the end users. 
+Also, this api get inforamtion needed for travel such as weather information, tourist attraction sites, resturants and supermarket location.
+It uses two process APIs to create, retrive, and update data for train service operation. 
 
 The two process API used are:
+
  **1. MyTrain Process API**
       
-      This API is used to to get or add data related to train services. The operations provided by this API are:
-      - Create User and subsrption 
-      - Get a User detail, a subcription detail, and list of subscription for a user
+      This API is used to to add or retrive data related to train services. The operations provided by this API are:
+      
+      - Allow user to register and subscribe for train service 
+      - Get a User detail, specific subscription detail, and list of subscription for a user
       - Request forgot password
       - Validate user
       - Provide train service and train detail information. 
  
  **2.  Notification Process API**
       
-       This API is used provides information incase of train service delay or cancellation. The operations that are provided by the API are:
+       This API is used to provide information related to delay or cancelled train service along with weather and covid records. The operations that are provided by the API are:
        
        - retrive current weather information,
        - get active covid status,
@@ -49,12 +51,14 @@ The two process API used are:
      Input: As payload user need to valid Email ID
     
  **4. Get specific user information**
+ 
       Used to retrive user detail for a sepcific user
       Resource: */myTravel/users/{userId}*
       Method:  GET
       URI parameter: A valid user id must be used for successful authorization
       
  **5. User subscription**
+ 
       It allows to create, retrive and delete subscription information  
       Resources to achieve the operation are: 
       - */myTravel/users/{userId}/subscriptions*
