@@ -3,7 +3,7 @@
 ## About the project
 
 mytravel-experience-api is an experience layer API which is used to provide train services information to the end users. 
-Also, this api get inforamtion needed for travel such as weather information, tourist attraction sites, resturants and supermarket location.
+Also, this api get information needed for travel such as weather information, tourist attraction sites, restaurants and supermarket location.
 It uses two process APIs to create, retrive, and update data for train service operation. 
 
 The two process API used are:
@@ -45,7 +45,7 @@ The two process API used are:
      
 **3. Forgot Password**
 
-     This allows use to request for the new password. 
+     This allows user to request for the new password. 
      Resource: */myTravel/forgotPassword*
      Method: POST
      Input: As payload user need to valid Email ID
@@ -70,36 +70,32 @@ The two process API used are:
          Input: Must pass a valid userid and subscriptionId as URI parameter
         
  **6. Location Information**
-      This provides information realted to the location like get all station information, get service information for specific date, 
+      This provides information related to the location like get all station information, get service information for specific date, 
       list point of interest, and list nearby stations.
       
       All the operation uses GET method. The operations available to get station or service information are:
       - */myTravel/locations/stations*
-            list all the station
-            Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations
+            list all the station 
             
       - */myTravel/locations/stations/nearby*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
            
       - */myTravel/locations/stations/trains*
            Query parameter: origin, originType, destination, destType, travelDate
-           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations/trains?origin=Waterloo&originType=L&destination=Basingstoke&destType=L&travelDate=2020-11-30
             
       - */myTravel/locations/attractionspots*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
-           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/attractionspots?city=Basingstoke
  
  **7. Weather Information**
       
-      It provides the weather forecast information for provided destination date.
+      It provides the weather forecast information for following five days
       Resource: */myTravel/locations/forecast*
       Method:  GET
       Query parameter: mandatory fields: city, date,  optional fields: countryCode, units
-      Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/forecast?city=Leeds&date=2020-11-1
 
 **8. COVID Information**
 
-     This is used to provides COVID information like new cases, death cases, and toatal cases based on boundary.
+     This is used to provides COVID information like daily cases, cummulative cases, and total cases based on boundary.
      Method:  GET
      Resources:
       - */myTravel/locations/covid*
@@ -107,4 +103,4 @@ The two process API used are:
       
       - */myTravel/locations/covid/areaname*
          Get COVID details information based on the region or areaname.
-         Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid/areaname   
+     
