@@ -75,23 +75,27 @@ The two process API used are:
       
       All the operation uses GET method. The operations available to get station or service information are:
       - */myTravel/locations/stations*
-            list all the station 
+            list all the station
+            Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations
             
       - */myTravel/locations/stations/nearby*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
            
       - */myTravel/locations/stations/trains*
            Query parameter: origin, originType, destination, destType, travelDate
+           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations/trains?origin=Waterloo&originType=L&destination=Basingstoke&destType=L&travelDate=2020-11-30
             
       - */myTravel/locations/attractionspots*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
+           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/attractionspots?city=Basingstoke
  
  **7. Weather Information**
       
-      It provides the weather forecast information for following five days
+      It provides the weather forecast information for provided destination date.
       Resource: */myTravel/locations/forecast*
       Method:  GET
       Query parameter: mandatory fields: city, date,  optional fields: countryCode, units
+      Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/forecast?city=Leeds&date=2020-11-1
 
 **8. COVID Information**
 
@@ -103,4 +107,4 @@ The two process API used are:
       
       - */myTravel/locations/covid/areaname*
          Get COVID details information based on the region or areaname.
-     
+         Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid/areaname   
