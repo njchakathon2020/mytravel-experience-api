@@ -2,30 +2,31 @@
 
 ## About the project
 
-mytravel-experience-api is an experience layer API which is used to provide train services information to the end users. 
-Also, this api get inforamtion needed for travel such as weather information, tourist attraction sites, resturants and supermarket location.
-It uses two process APIs to create, retrive, and update data for train service operation. 
+mytravel-experience-api is an experience layer API which provides train services information to the end users. 
+It provides inforamtion useful for travelling such as weather information, tourist attraction sites, restaurants, supermarket location and COVID updates.
+It uses two process APIs to create, retrieve, and update data for train service operations. 
 
 The two process API used are:
 
- **1. MyTrain Process API**
+ **1. myTrain Process API**
       
-      This API is used to to add or retrive data related to train services. The operations provided by this API are:
+      This API is used to to add or retrieve data related to train services. The operations provided by this API are:
       
-      - Allow user to register and subscribe for train service 
-      - Get a User detail, specific subscription detail, and list of subscription for a user
+      - Register user to services
+      - Allows user to subscribe and unsubscribe to train services 
+      - Get user details, specific subscription details, and list of subscriptions for a user
       - Request forgot password
-      - Validate user
+      - Authenticate user to login
       - Provide train service and train detail information. 
  
  **2.  Notification Process API**
       
-       This API is used to provide information related to delay or cancelled train service along with weather and covid records. The operations that are provided by the API are:
+       This API is used to nnotify people about changes in train services (cancelled or delayed), weather forecast, COVID updates, nearby attraction spots. The operations that are provided by the API are:
        
-       - retrive current weather information,
-       - get active covid status,
-       - list point of interest such as restaurants, supermarket, and
-       - notify users based about the train delay or cancellation
+       - Retrieve current weather information,
+       - Get Covid update,
+       - List places of interest such as restaurants, supermarket, and tourist spots
+       - Notify users about the train delay or cancellation
 
 ## List of endpoints
 
@@ -35,6 +36,7 @@ The two process API used are:
      Resource: */myTravel/register*
      Method: POST
      Input: As payload these fields are: First Name, Last Name, Email, Phone, Password
+     Response: Message of status of operation.
      
 **2. User login**
      
@@ -42,6 +44,7 @@ The two process API used are:
      Resource: */myTravel/register*
      Method: POST
      Input: As payload user need to enter Email and password
+     Response: Returns session token
      
 **3. Forgot Password**
 
@@ -49,6 +52,7 @@ The two process API used are:
      Resource: */myTravel/forgotPassword*
      Method: POST
      Input: As payload user need to valid Email ID
+     Response: Reset Password URL
     
  **4. Get specific user information**
  
@@ -56,6 +60,7 @@ The two process API used are:
       Resource: */myTravel/users/{userId}*
       Method:  GET
       URI parameter: A valid user id must be used for successful authorization
+      Response: User details
       
  **5. User subscription**
  
@@ -64,10 +69,12 @@ The two process API used are:
       - */myTravel/users/{userId}/subscriptions*
          Methods: GET, POST
          Input: Must pass a valid userid as URI parameter
+         Response: All subscriptions of a user
          
       - */myTravel/users/{userId}/subscriptions/{subscriptionId}*
          Methods: GET, DELETE
          Input: Must pass a valid userid and subscriptionId as URI parameter
+         Response: A particular subscription
         
  **6. Location Information**
       This provides information realted to the location like get all station information, get service information for specific date, 
@@ -76,19 +83,19 @@ The two process API used are:
       All the operation uses GET method. The operations available to get station or service information are:
       - */myTravel/locations/stations*
             list all the station
-            Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations
+            Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations
             
       - */myTravel/locations/stations/nearby*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
-           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/nearby?address=London Waterloo
+           Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/nearby?address=London Waterloo
            
       - */myTravel/locations/stations/trains*
            Query parameter: origin, originType, destination, destType, travelDate
-           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations/trains?origin=Waterloo&originType=L&destination=Basingstoke&destType=L&travelDate=2020-11-30
+           Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/stations/trains?origin=Waterloo&originType=L&destination=Basingstoke&destType=L&travelDate=2020-11-30
             
       - */myTravel/locations/attractionspots*
            Query parameter: To search nearby station user need to pass the 'address' as query parameter
-           Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/attractionspots?city=Basingstoke
+           Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/attractionspots?city=Basingstoke
  
  **7. Weather Information**
       
@@ -96,7 +103,7 @@ The two process API used are:
       Resource: */myTravel/locations/forecast*
       Method:  GET
       Query parameter: mandatory fields: city, date,  optional fields: countryCode, units
-      Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/forecast?city=Leeds&date=2020-11-1
+      Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/forecast?city=Leeds&date=2020-11-1
 
 **8. COVID Information**
 
@@ -105,8 +112,8 @@ The two process API used are:
      Resources:
       - */myTravel/locations/covid*
          Get the COVID information based on the country. 
-         Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid
+         Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid
       
       - */myTravel/locations/covid/areaname*
          Get COVID details information based on the region or areaname.
-         Example: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid/areaname   
+         Endpoint: http://mytravel-experience-api.us-e2.cloudhub.io/api/myTravel/locations/covid/areaname   
