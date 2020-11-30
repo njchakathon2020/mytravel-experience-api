@@ -13,8 +13,90 @@ The two process API used are:
       - Create User and subsrption 
       - Get a User detail, a subcription detail, and list of subscription for a user
       - Request forgot password
-      - It provides information such as station name, station codes and nearby post codes. 
+      - Validate user
+      - Provide train service and train detail information. 
  
  **2.  Notification Process API**
       
-       This API is used to 
+       This API is used provides information incase of train service delay or cancellation. The operations that are provided by the API are:
+       
+       - retrive current weather information,
+       - get active covid status,
+       - list point of interest such as restaurants, supermarket, and
+       - notify users based about the train delay or cancellation
+
+## List of endpoints
+
+**1. User registration**
+
+     It is used to register.
+     Resource: */myTravel/register*
+     Method: POST
+     Input: As payload these fields are: First Name, Last Name, Email, Phone, Password
+     
+**2. User login**
+     
+     This method is used to create token for login details
+     Resource: */myTravel/register*
+     Method: POST
+     Input: As payload user need to enter Email and password
+     
+**3. Forgot Password**
+
+     This allows use to request for the new password. 
+     Resource: */myTravel/forgotPassword*
+     Method: POST
+     Input: As payload user need to valid Email ID
+    
+ **4. Get specific user information**
+      Used to retrive user detail for a sepcific user
+      Resource: */myTravel/users/{userId}*
+      Method:  GET
+      URI parameter: A valid user id must be used for successful authorization
+      
+ **5. User subscription**
+      It allows to create, retrive and delete subscription information  
+      Resources to achieve the operation are: 
+      - */myTravel/users/{userId}/subscriptions*
+         Methods: GET, POST
+         Input: Must pass a valid userid as URI parameter
+         
+      - */myTravel/users/{userId}/subscriptions/{subscriptionId}*
+         Methods: GET, DELETE
+         Input: Must pass a valid userid and subscriptionId as URI parameter
+        
+ **6. Location Information**
+      This provides information realted to the location like get all station information, get service information for specific date, 
+      list point of interest, and list nearby stations.
+      
+      All the operation uses GET method. The operations available to get station or service information are:
+      - */myTravel/locations/stations*
+            list all the station 
+            
+      - */myTravel/locations/stations/nearby*
+           Query parameter: To search nearby station user need to pass the 'address' as query parameter
+           
+      - */myTravel/locations/stations/trains*
+           Query parameter: origin, originType, destination, destType, travelDate
+            
+      - */myTravel/locations/attractionspots*
+           Query parameter: To search nearby station user need to pass the 'address' as query parameter
+ 
+ **7. Weather Information**
+      
+      It provides the weather forecast information for following five days
+      Resource: */myTravel/locations/forecast*
+      Method:  GET
+      Query parameter: mandatory fields: city, date,  optional fields: countryCode, units
+
+**8. COVID Information**
+
+     This is used to provides COVID information like new cases, death cases, and toatal cases based on boundary.
+     Method:  GET
+     Resources:
+      - */myTravel/locations/covid*
+         Get the COVID information based on the country. 
+      
+      - */myTravel/locations/covid/areaname*
+         Get COVID details information based on the region or areaname.
+     
